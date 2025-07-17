@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Revenue Loss Calculator | Core Accounting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Open Sans", sans-serif;
+            line-height: 1.5;
+            color: var(--text-color);
+            background-color: #f9f9f9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+    </style>
+</head>
+
+<body>
+
+    <style>
+        .ms-cl *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ms-cl-primary-color: #224423;
+            --ms-cl-accent-color: #e74c3c;
+            --ms-cl-border-color: #e0e0e0;
+            --ms-cl-button-color: #d5ad36;
+            --ms-cl-text-color: #000000;
+            --ms-cl-text-light: #777;
+            --ms-cl-card-bg: #f8f9fa;
+        }
+
+        .ms-cl .calculator-container {
+            max-width: 600px;
+            width: 600px;
+            background: white;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0;
+            padding: 25px;
+            margin: 0 auto;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ms-cl h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .subtitle {
+            font-size: 0.9rem;
+            color: var(--ms-cl-text-light);
+            margin-bottom: 20px;
+        }
+
+        .ms-cl .divider {
+            width: 100%;
+            height: 1px;
+            background-color: var(--ms-cl-border-color);
+            margin: 8px 0;
+        }
+
+        .ms-cl .view-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .ms-cl .view-toggle button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ms-cl .view-toggle button.active {
+            background-color: var(--ms-cl-primary-color);
+            color: white;
+        }
+
+        .ms-cl h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--ms-cl-primary-color);
+        }
+
+        /* Annual View Styles */
+        .ms-cl .annual-inputs {
+            margin-bottom: 20px;
+        }
+
+        .ms-cl .input-group {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 15px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ms-cl .input-group label {
+            font-size: 0.9rem;
+            margin-bottom: 5px;
+            font-weight: 500;
+        }
+
+        .ms-cl .input-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0px;
+            font-family: inherit;
+        }
+
+        .ms-cl .input-group input:focus {
+            outline: none;
+            border-color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .annual-result {
+            background-color: var(--ms-cl-card-bg);
+            padding: 15px;
+            border-radius: 0px;
+            text-align: center;
+        }
+
+        .ms-cl .result-label {
+            font-size: 1rem;
+            color: var(--ms-cl-text-color);
+            margin-bottom: 5px;
+        }
+
+        .ms-cl .result-amount {
+            font-size: 2rem;
+            font-weight: 600;
+            color: var(--ms-cl-accent-color);
+        }
+
+        /* Monthly View Styles */
+        .ms-cl .monthly-table-container {
+            width: 100%;
+        }
+
+        .ms-cl .monthly-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 15px;
+        }
+
+        .ms-cl .monthly-table th,
+        .ms-cl .monthly-table td {
+            padding: 3px 4px;
+            border-bottom: 1px solid var(--ms-cl-border-color);
+            text-align: left;
+        }
+
+        .ms-cl .monthly-table tr td:last-child {
+            text-align: right;
+        }
+
+        .ms-cl .monthly-table th {
+            font-weight: 500;
+            background-color: var(--ms-cl-card-bg);
+        }
+
+        .ms-cl .monthly-table tfoot td {
+            font-weight: 500;
+            background-color: var(--ms-cl-card-bg);
+            border-bottom: none;
+        }
+
+        .ms-cl .monthly-table input {
+            width: 100%;
+            padding: 6px 8px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0px;
+            font-family: inherit;
+        }
+
+        .ms-cl .monthly-table input:focus {
+            outline: none;
+            border-color: var(--ms-cl-primary-color);
+        }
+
+        /* Monthly Cards for Mobile */
+        .ms-cl .monthly-cards {
+            display: none;
+        }
+
+        .ms-cl .monthly-card {
+            background-color: var(--ms-cl-card-bg);
+            border-radius: 0px;
+            padding: 15px;
+            margin-bottom: 10px;
+        }
+
+        .ms-cl .monthly-card-header {
+            font-weight: 500;
+            margin-bottom: 10px;
+            color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .monthly-card-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ms-cl .monthly-card-label {
+            font-size: 0.9rem;
+            color: var(--ms-cl-text-light);
+        }
+
+        .ms-cl .monthly-card-value {
+            font-weight: 500;
+        }
+
+        .ms-cl .monthly-card-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0px;
+        }
+
+        .ms-cl .monthly-card-input:focus {
+            outline: none;
+            border-color: var(--ms-cl-primary-color);
+        }
+
+        /* CTA Section */
+        .ms-cl .cta-section {
+            text-align: center;
+        }
+
+        .ms-cl .cta-section p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .ms-cl .cta-button {
+            display: inline-block;
+            background-color: var(--ms-cl-button-color);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 15px 0;
+            transition: background-color 0.2s;
+        }
+
+        .ms-cl .cta-button:hover {
+            background-color: #e2b631;
+        }
+
+        .ms-cl .website {
+            font-size: 0.85rem;
+            color: var(--ms-cl-text-light);
+        }
+
+        /* Responsive Styles */
+        @media (min-width: 768px) {
+            .ms-cl .annual-inputs {
+                display: grid;
+                grid-template-rows: 1fr 1fr;
+                gap: 6px;
+            }
+
+            .ms-cl .input-group {
+                margin-bottom: 0;
+            }
+
+            .ms-cl .monthly-table.desktop-view {
+                display: table;
+            }
+
+            .ms-cl .monthly-cards.mobile-view {
+                display: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .ms-cl .monthly-table.desktop-view {
+                display: none;
+            }
+
+            .ms-cl .monthly-cards.mobile-view {
+                display: block;
+            }
+
+            .ms-cl .calculator-container {
+                padding: 15px;
+            }
+
+            .ms-cl h1 {
+                font-size: 1.3rem;
+            }
+        }
+
+        /* Monthly Totals Card Styles */
+        .ms-cl .monthly-totals {
+            margin-top: 15px;
+        }
+
+        .ms-cl .monthly-totals-card {
+            background-color: var(--ms-cl-card-bg);
+            border-radius: 0px;
+            padding: 15px;
+        }
+
+        .ms-cl .monthly-totals-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+        }
+
+        .ms-cl .monthly-totals-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ms-cl .monthly-totals-label {
+            font-weight: 500;
+            color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .monthly-totals-value {
+            font-weight: 600;
+        }
+
+        .ms-cl #mobile-total-revenue {
+            color: var(--ms-cl-accent-color);
+        }
+
+        /* Desktop totals in table footer */
+        .ms-cl .monthly-table tfoot td {
+            font-weight: 600;
+            background-color: var(--ms-cl-card-bg);
+        }
+
+        .ms-cl .monthly-table tfoot td:nth-child(4) {
+            color: var(--ms-cl-accent-color);
+        }
+
+        @media (min-width: 768px) {
+            .ms-cl .monthly-totals.mobile-view {
+                display: none;
+            }
+        }
+
+        @media (max-width: 767px) {
+            .ms-cl .calculator-container {
+                width: 100%;
+            }
+
+            .ms-cl .input-group {
+                flex-direction: row;
+                justify-content: space-between;
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .ms-cl .monthly-table tfoot {
+                display: none;
+            }
+
+            .ms-cl .monthly-totals.mobile-view {
+                display: block;
+            }
+
+            .ms-cl .monthly-totals-row {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+    <div class="ms-cl">
+        <h1 style="text-align: center;">Cost of Doing Your Own Bookkeeping</h1>
+        <p class="subtitle" style="text-align: center;">See how much income you’re losing by handling your own payroll,
+            bookkeeping, and taxes.</p>
+        <div class="calculator-container">
+            <div class="view-toggle">
+                <button id="annual-toggle" class="active">Annual</button>
+                <button id="monthly-toggle">Monthly</button>
+            </div>
+
+            <div id="annual-view" class="calculator-view">
+                <h2>Quick Annual Estimate</h2>
+                <div class="divider"></div>
+                <div class="annual-inputs">
+                    <div class="input-group">
+                        <label for="annual-hours">Estimated Hours You Spend Per Year</label>
+                        <input type="number" id="annual-hours" value="65">
+                    </div>
+                    <div class="input-group">
+                        <label for="billable-rate">Your Billable Rate ($/Hour)</label>
+                        <input type="number" id="billable-rate" value="150">
+                    </div>
+                </div>
+                <div class="annual-result">
+                    <div class="result-label">Estimated Income Lost ($)</div>
+                    <div class="result-amount" id="annual-revenue">9,750.00</div>
+                </div>
+            </div>
+
+            <div id="monthly-view" class="calculator-view" style="display: none;">
+                <h2>Monthly Breakdown of Lost Income</h2>
+                <div class="input-group">
+                    <label>Billable Rate per Hour ($):</label>
+                    <input type="number" id="monthly-rate" value="150">
+                </div>
+                <br />
+                <div class="monthly-table-container">
+                    <table class="monthly-table desktop-view">
+                        <thead>
+                            <tr>
+                                <th>Month</th>
+                                <th nowrap>Hours Spent</th>
+                                <th nowrap>Billable Rate ($/Hour)</th>
+                                <th nowrap>Income Lost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <!-- Generated by JavaScript -->
+                        </tbody>
+                    </table>
+
+                    <div class="monthly-cards mobile-view">
+                        <!-- Generated by JavaScript -->
+                    </div>
+
+                    <div class="monthly-totals">
+                        <div class="monthly-totals-card">
+                            <div class="monthly-totals-row">
+                                <span class="monthly-totals-label">Total Hours:</span>
+                                <span class="monthly-totals-value" id="mobile-total-hours">65</span>
+                            </div>
+                            <div class="monthly-totals-row">
+                                <span class="monthly-totals-label">Estimated Annual Income Lost:</span>
+                                <span class="monthly-totals-value" id="mobile-total-revenue">$9,750.00</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <br />
+            <div class="cta-section">
+                <p>You work hard. Don't let admin time steal your income.</p>
+                <p>Let's talk about how to get those hours (and dollars) back.</p>
+                <a href="https://www.coreaccountinggroup.com" class="cta-button">Schedule a Free Consultation</a>
+            </div>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        jQuery(document).ready(function ($) {
+            // Monthly data
+            const months = [
+                'January', 'February', 'March', 'April', 'May', 'June',
+                'July', 'August', 'September', 'October', 'November', 'December'
+            ];
+
+            const defaultHours = [6, 6, 6, 6, 5, 5, 5, 5, 5, 5, 5, 6];
+            const defaultRate = 150;
+
+            // Generate monthly tables
+            function generateMonthlyTables() {
+                const $tableBody = $('.monthly-table tbody');
+                const $cardsContainer = $('.monthly-cards');
+
+                $tableBody.empty();
+                $cardsContainer.empty();
+
+                let totalHours = 0;
+                let totalRevenue = 0;
+
+                months.forEach((month, index) => {
+                    const hours = defaultHours[index];
+                    const rate = defaultRate;
+                    const revenue = hours * rate;
+
+                    totalHours += hours;
+                    totalRevenue += revenue;
+
+                    // Desktop table row
+                    $tableBody.append(`
+                <tr>
+                    <td>${month}</td>
+                    <td><input type="number" class="monthly-hours" value="${hours}" data-month="${index}"></td>
+                    <td><input type="number" class="monthly-rate" value="${rate}" data-month="${index}"></td>
+                    <td class="monthly-revenue">$${formatNumber(revenue.toFixed(2))}</td>
+                </tr>
+            `);
+
+                    // Mobile card
+                    $cardsContainer.append(`
+                <div class="monthly-card" data-month="${index}">
+                    <div class="monthly-card-header">${month}</div>
+                    <div class="monthly-card-row">
+                        <span class="monthly-card-label">Hours Spent:</span>
+                        <input type="number" class="monthly-card-input monthly-hours" value="${hours}">
+                    </div>
+                    <div class="monthly-card-row">
+                        <span class="monthly-card-label">Billable Rate ($/Hour):</span>
+                        <input type="number" class="monthly-card-input monthly-rate" value="${rate}">
+                    </div>
+                    <div class="monthly-card-row">
+                        <span class="monthly-card-label">Income Lost:</span>
+                        <span class="monthly-card-value monthly-revenue">$${formatNumber(revenue.toFixed(2))}</span>
+                    </div>
+                </div>
+            `);
+                });
+
+                updateTotalsMonthly(totalHours, totalRevenue);
+            }
+
+            // Update all totals
+            function updateTotals(hours, revenue) {
+                $('#annual-revenue').text('$' + formatNumber(revenue.toFixed(2)));
+            }
+            function updateTotalsMonthly(hours, revenue) {
+                $('#mobile-total-hours').text(hours);
+                $('#mobile-total-revenue').text('$' + formatNumber(revenue.toFixed(2)));
+            }
+
+            // Calculate monthly totals
+            function calculateMonthlyTotals() {
+                let totalHours = 0;
+                let totalRevenue = 0;
+
+                $('.monthly-table .monthly-hours').each(function (i, elm) {
+                    const hours = parseFloat($(elm).val()) || 0;
+                    const rate = parseFloat($(elm).closest('tr').find('.monthly-rate').val()) || 0;
+                    totalHours += hours;
+                    totalRevenue += hours * rate;
+
+
+                    // Update revenue cell
+                    $(elm).closest('tr').find('.monthly-revenue').text('$' + formatNumber((hours * rate).toFixed(2)));
+                });
+
+                $('#mobile-total-hours').text(totalHours);
+                $('#mobile-total-revenue').text('$' + formatNumber(totalRevenue.toFixed(2)));
+            }
+
+            // Calculate monthly totals
+            function calculateMonthlyTotalsMobile() {
+                let totalHours = 0;
+                let totalRevenue = 0;
+                let totalHoursMobile = 0;
+                let totalRevenueMobile = 0;
+
+                $('.monthly-card').each(function (index, elm) {
+                    const hours = parseFloat($(elm).find('.monthly-hours').val()) || 0;
+                    const rate = parseFloat($(elm).find('.monthly-rate').val()) || 0;
+                    const revenue = hours * rate;
+
+                    totalHours += hours;
+                    totalRevenue += revenue;
+
+                    // Update revenue display
+                    $(elm).find('.monthly-revenue').text('$' + formatNumber(revenue.toFixed(2)));
+                });
+
+                $('#mobile-total-hours').text(totalHours);
+                $('#mobile-total-revenue').text('$' + formatNumber(totalRevenue.toFixed(2)));
+            }
+
+            // Update annual calculation
+            function updateAnnualCalculation() {
+                const hours = parseFloat($('#annual-hours').val()) || 0;
+                const rate = parseFloat($('#billable-rate').val()) || 0;
+                const revenue = hours * rate;
+
+                $('#annual-revenue').text('$' + formatNumber(revenue.toFixed(2)));
+            }
+
+            // Format numbers with commas
+            function formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Toggle between views
+            $('#annual-toggle').click(function () {
+                $(this).addClass('active');
+                $('#monthly-toggle').removeClass('active');
+                $('#annual-view').show();
+                $('#monthly-view').hide();
+            });
+
+            $('#monthly-toggle').click(function () {
+                $(this).addClass('active');
+                $('#annual-toggle').removeClass('active');
+                $('#monthly-view').show();
+                $('#annual-view').hide();
+            });
+
+            // Sync rates between views
+            $('#billable-rate').on('input', function () {
+                updateAnnualCalculation();
+            });
+
+            // Event listeners
+            $('#annual-hours').on('input', updateAnnualCalculation);
+
+            $(document).on('focus', '.ms-cl input', function () {
+                $(this).select();
+            });
+
+            $(document).on('input', '#monthly-rate', function () {
+                $(document).find('.monthly-rate').val($(this).val());
+                calculateMonthlyTotals();
+                calculateMonthlyTotalsMobile();
+            });
+
+            $(document).on('input', '.monthly-table .monthly-hours, .monthly-table .monthly-rate', calculateMonthlyTotals);
+            $(document).on('input', '.monthly-card .monthly-hours, .monthly-card .monthly-rate', calculateMonthlyTotalsMobile);
+
+            // Initialize
+            generateMonthlyTables();
+            updateAnnualCalculation();
+        });
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,738 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>S Corp Tax Savings Calculator | Core Accounting</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: "Open Sans", sans-serif;
+            line-height: 1.5;
+            color: var(--ms-cl-text-color);
+            background-color: #f9f9f9;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: start;
+            align-items: center;
+            min-height: 100vh;
+        }
+    </style>
+</head>
+
+<body>
+    <style>
+        .ms-cl *,
+        ::after,
+        ::before {
+            box-sizing: border-box;
+        }
+
+        :root {
+            --ms-cl-primary-color: #224423;
+            --ms-cl-accent-color: #e74c3c;
+            --ms-cl-border-color: #e0e0e0;
+            --ms-cl-button-color: #d5ad36;
+            --ms-cl-text-color: #000000;
+            --ms-cl-text-light: #777;
+            --ms-cl-card-bg: #f8f9fa;
+        }
+
+        .ms-cl h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .calculator-container {
+            max-width: 600px;
+            width: 600px;
+            background: white;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0;
+            padding: 25px;
+            margin: 0 auto;
+            font-family: inherit;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .ms-cl .subtitle {
+            font-size: 0.9rem;
+            color: var(--ms-cl-text-light);
+        }
+
+        .ms-cl .view-toggle {
+            display: flex;
+            margin-bottom: 20px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .ms-cl .view-toggle button {
+            flex: 1;
+            padding: 8px 12px;
+            border: none;
+            background: none;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .ms-cl .view-toggle button.active {
+            background-color: var(--ms-cl-primary-color);
+            color: white;
+        }
+
+        .ms-cl h2 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: var(--ms-cl-primary-color);
+            border-bottom: 1px solid var(--ms-cl-border-color);
+            padding-bottom: 8px;
+        }
+
+        .ms-cl .input-section {
+            margin-bottom: 20px;
+        }
+
+        .ms-cl .input-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            position: relative;
+        }
+
+        .ms-cl .input-group {
+            display: flex;
+            flex-direction: row;
+            margin-bottom: 6px;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .ms-cl .input-group input {
+            padding: 8px 12px;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0px;
+            font-family: inherit;
+        }
+
+        .ms-cl .input-group input:focus {
+            outline: none;
+            border-color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .input-group.simple input {
+            min-width: 246px;
+        }
+
+        .ms-cl .input-wrapper {
+            width: 246px;
+            display: flex;
+            align-items: center;
+            border: 1px solid var(--ms-cl-border-color);
+            border-radius: 0;
+            overflow: hidden;
+        }
+
+        .ms-cl .input-wrapper input {
+            flex: 1;
+            padding: 8px 12px;
+            border: 1px solid transparent;
+            font-family: inherit;
+            text-align: right;
+        }
+
+        .ms-cl .input-wrapper input:focus {
+            outline: none;
+            border-color: var(--ms-cl-primary-color);
+        }
+
+        .ms-cl .input-prefix,
+        .ms-cl .input-suffix {
+            padding: 4px 12px;
+            background-color: #fff;
+            font-weight: 500;
+            color: var(--ms-cl-text-light);
+        }
+
+        .ms-cl .input-prefix {
+            border-right: 1px solid var(--ms-cl-border-color);
+        }
+
+        .ms-cl .input-suffix {
+            border-left: 1px solid var(--ms-cl-border-color);
+        }
+
+        .ms-cl .result-section {
+            background-color: var(--ms-cl-card-bg);
+            border-radius: 0;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .ms-cl .result-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .ms-cl .result-row:last-child {
+            margin-bottom: 0;
+        }
+
+        .ms-cl .result-label {
+            font-weight: 600;
+        }
+
+        .ms-cl .result-value {
+            color: var(--ms-cl-primary-color);
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .ms-cl .result-row.highlight {
+            padding-top: 12px;
+            border-top: 1px solid var(--ms-cl-border-color);
+        }
+
+        .ms-cl .result-row.highlight .result-value {
+            color: var(--ms-cl-primary-color);
+            font-weight: 600;
+            font-size: 20px;
+        }
+
+        .ms-cl .cta-section {
+            text-align: center;
+            margin-top: 25px;
+        }
+
+        .ms-cl .cta-section p {
+            margin: 8px 0;
+            font-size: 0.95rem;
+        }
+
+        .ms-cl .text-right {
+            text-align: right !important;
+        }
+
+        .ms-cl .cta-button {
+            display: inline-block;
+            background-color: var(--ms-cl-button-color);
+            color: white;
+            padding: 6px 20px;
+            border-radius: 0;
+            text-decoration: none;
+            font-weight: 500;
+            margin: 15px 0;
+            transition: background-color 0.2s;
+        }
+
+        .ms-cl .cta-button:hover {
+            background-color: #e2b631;
+        }
+
+        .ms-cl .input-note {
+            display: none;
+            text-align: right;
+            font-size: 12px;
+            margin-bottom: 10px;
+            color: #464646;
+            font-style: italic;
+        }
+
+
+        .ms-cl .help-tip {
+            position: absolute;
+            top: 1px;
+            right: -24px;
+            text-align: center;
+            background-color: #ffffff;
+            border: 1px solid #000;
+            color: #000;
+            border-radius: 50%;
+            width: 15px;
+            height: 15px;
+            font-size: 10px;
+            line-height: 10px;
+            cursor: default;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .ms-cl .help-tip:before {
+            content: '?';
+            font-weight: bold;
+            color: #000;
+        }
+
+        .ms-cl .help-tip:hover p {
+            display: block;
+            transform-origin: 100% 0%;
+
+            -webkit-animation: fadeIn 0.3s ease-in-out;
+            animation: fadeIn 0.3s ease-in-out;
+
+        }
+
+        .ms-cl .help-tip p {
+            /* The tooltip */
+            display: none;
+            text-align: left;
+            background-color: #1E2021;
+            padding: 20px;
+            width: 300px;
+            position: absolute;
+            border-radius: 3px;
+            box-shadow: 1px 1px 1px rgb(0 0 0 / 20%);
+            right: -9px;
+            color: #FFF;
+            font-size: 13px;
+            line-height: 1.4;
+            font-style: italic;
+            top: 13px;
+            z-index: 10;
+        }
+
+        .ms-cl .help-tip p:before {
+            /* The pointer of the tooltip */
+            position: absolute;
+            content: '';
+            width: 0;
+            height: 0;
+            border: 6px solid transparent;
+            border-bottom-color: #1E2021;
+            right: 10px;
+            top: -12px;
+        }
+
+        .ms-cl .help-tip p:after {
+            /* Prevents the tooltip from being hidden */
+            width: 100%;
+            height: 40px;
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 0;
+        }
+
+        /* CSS animation */
+
+        @-webkit-keyframes fadeIn {
+            0% {
+                opacity: 0;
+                transform: scale(0.6);
+            }
+
+            100% {
+                opacity: 100%;
+                transform: scale(1);
+            }
+        }
+
+        @keyframes fadeIn {
+            0% {
+                opacity: 0;
+            }
+
+            100% {
+                opacity: 100%;
+            }
+        }
+
+
+        @media (max-width: 480px) {
+            .ms-cl .calculator-container {
+                padding: 15px;
+                width: 100%;
+            }
+
+            .ms-cl .input-group {
+                flex-direction: column;
+                align-items: stretch;
+                margin-bottom: 12px;
+            }
+
+            .ms-cl .input-wrapper {
+                width: 100%;
+            }
+
+            .ms-cl .result-row {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .ms-cl .calculator-header h1 {
+                font-size: 1.3rem;
+            }
+
+            .ms-cl .view-toggle button {
+                padding: 8px 10px;
+                font-size: 0.9rem;
+            }
+
+            .ms-cl .result-label {
+                text-align: center;
+            }
+
+            .ms-cl .help-tip {
+                right: 0px;
+            }
+        }
+    </style>
+    <div class="ms-cl">
+        <h1 style="text-align: center;">S Corp Tax Savings Calculator</h1>
+        <p class="subtitle" style="text-align: center;" id="sub_one">See how much you could save in taxes by switching
+            to an S
+            Corporation.</p>
+        <p class="subtitle" style="text-align: center; display: none;" id="sub_two">See if you're overpaying taxes by
+            paying yourself
+            too high a salary as an S Corp owner.</p>
+        <div class="calculator-container">
+            <div class="view-toggle">
+                <button id="schedule-c-toggle" class="active">Not an S Corp (Default Setup)</button>
+                <button id="s-corp-toggle">S Corporation Owner</button>
+            </div>
+
+            <div id="schedule-c-view" class="calculator-view">
+                <h2>Your Current Tax Setup (If You Haven't Elected S Corp)</h2>
+                <p>If you haven't officially elected to be taxed as an S Corporation, the IRS likely taxes you as a
+                    sole
+                    proprietor — even if you're an LLC.</p>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="sc-revenue">
+                            Your Annual Gross Revenue
+                            <div class="help-tip">
+                                <p>Total revenue before expenses</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="sc-revenue" value="250,000">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="sc-profit">
+                            Your Net Profitt
+                            <div class="help-tip">
+                                <p>Profit after expenses</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="sc-profit" value="150,000">
+                        </div>
+                    </div>
+                    <div class="input-group simple">
+                        <label for="sc-hours">
+                            Hours You Work Per Year
+                            <div class="help-tip">
+                                <p>Total estimated hours you work annually</p>
+                            </div>
+                        </label>
+                        <input type="text" class="text-right" id="sc-hours" value="1,750">
+                    </div>
+                    <div class="input-group">
+                        <label for="sc-tax-rate">
+                            Your Tax Bracket (%)
+                            <div class="help-tip">
+                                <p>If unsure, 22% is a common starting point</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="sc-tax-rate" value="22">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group simple">
+                        <label for="sc-years">
+                            How Many Years You'll Stay in Business
+                            <div class="help-tip">
+                                <p>This helps us estimate long-term savings</p>
+                            </div>
+                        </label>
+                        <input type="text" class="text-right" id="sc-years" value="20">
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <div class="result-row">
+                        <span class="result-label">Estimated Annual Tax Savings with an S Corp</span>
+                        <span class="result-value" id="sc-annual-savings">$0.00</span>
+                    </div>
+                    <div class="result-row highlight">
+                        <span class="result-label">Estimated Lifetime Tax Savings</span>
+                        <span class="result-value" id="sc-lifetime-savings">$0.00</span>
+                    </div>
+                </div>
+                <div class="cta-section">
+                    <p>You work hard. Don't overpay in taxes if you don’t have to.</p>
+                    <p>Let's see if an S Corp can help you keep more of what you earn.</p>
+                    <a href="https://www.coreaccountinggroup.com" class="cta-button">Schedule a Free Consultation</a>
+                </div>
+            </div>
+
+            <div id="s-corp-view" class="calculator-view" style="display: none;">
+                <h2>Your Current S Corporation Tax Setup</h2>
+                <p>As an S Corp owner, you're required to pay yourself a “reasonable salary.” But many owners
+                    overpay
+                    and end up losing thousands in extra payroll taxes.
+                    This calculator estimates how much you might save by aligning your salary with what’s considered
+                    reasonable for your role and hours.
+                </p>
+                <div class="input-section">
+                    <div class="input-group">
+                        <label for="s-corp-salary">
+                            Your Current Salary
+                            <div class="help-tip">
+                                <p>What you're paying yourself through payroll now</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="s-corp-salary" value="120,000">
+                        </div>
+                    </div>
+                    <div class="input-group simple">
+                        <label for="s-corp-hours">
+                            How Many Hours You Work Per Year
+                            <div class="help-tip">
+                                <p>Your estimated annual workload</p>
+                            </div>
+                        </label>
+                        <input type="text" class="text-right" id="s-corp-hours" value="1,750">
+                    </div>
+                    <div class="input-group">
+                        <label for="s-corp-hourly-rate">
+                            Reasonable Hourly Rate
+                            <div class="help-tip">
+                                <p>Use the going rate for your role. National average is ~$34/hr</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <span class="input-prefix">$</span>
+                            <input type="text" id="s-corp-hourly-rate" value="34.00">
+                        </div>
+                    </div>
+                    <div class="input-group">
+                        <label for="s-corp-tax-rate">
+                            Your Tax Bracket (%)
+                            <div class="help-tip">
+                                <p>If unsure, 22% is a common estimate</p>
+                            </div>
+                        </label>
+                        <div class="input-wrapper">
+                            <input type="text" id="s-corp-tax-rate" value="22">
+                            <span class="input-suffix">%</span>
+                        </div>
+                    </div>
+                    <div class="input-group simple">
+                        <label for="s-corp-years">
+                            How Many Years You'll Stay in Business
+                            <div class="help-tip">
+                                <p>This helps us calculate lifetime tax impact</p>
+                            </div>
+                        </label>
+                        <input type="text" class="text-right" id="s-corp-years" value="20">
+                    </div>
+                </div>
+
+                <div class="result-section">
+                    <div class="result-row">
+                        <span class="result-label">
+                            Estimated Annual Tax Overpayment
+                            <small style="display: block; font-weight: 400;">Due to Paying Too High a Salary</small>
+                        </span>
+                        <span class="result-value" id="s-corp-annual-savings">$0.00</span>
+                    </div>
+                    <div class="result-row highlight">
+                        <span class="result-label">Estimated Lifetime Tax Overpayment</span>
+                        <span class="result-value" id="s-corp-lifetime-savings">$0.00</span>
+                    </div>
+                </div>
+                <div class="cta-section">
+                    <p>You may be paying thousands more than you need to in payroll taxes.</p>
+                    <p>Let’s talk about what a reasonable salary looks like for your business.</p>
+                    <a href="https://www.coreaccountinggroup.com" class="cta-button">Schedule a Free Consultation</a>
+                </div>
+            </div>
+            <p>
+                <small>
+                    <u>Disclaimer</u>:<br />
+                    This is a general estimate based on the information you provided. Your individual tax situation may
+                    vary, and actual savings could differ. This calculator is for informational purposes only and should
+                    not
+                    be considered tax advice.
+                </small>
+            </p>
+        </div>
+    </div>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        jQuery(document).ready(function ($) {
+            // Format number with commas
+            function formatNumber(num) {
+                return num.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+            }
+
+            // Parse formatted number
+            function parseNumber(str) {
+                return parseFloat(str.replace(/,/g, '')) || 0;
+            }
+
+            // Format currency
+            function formatCurrency(num) {
+                return '$' + formatNumber(num.toFixed(0));
+            }
+
+            // Show note on focus
+            $('.ms-cl input[type="text"]').on('focus', function () {
+                $('.input-note').hide();
+                $(`#note-${$(this).attr('id')}`).slideDown();
+                console.log($(this).attr('id'));
+            });
+
+            // Handle input formatting
+            $('.ms-cl input[type="text"]').on('input', function () {
+                let value = $(this).val().replace(/,/g, '');
+                if (value === '') return;
+
+                // Handle decimal places for dollar amounts
+                if ($(this).attr('id') === 's-corp-hourly-rate') {
+                    const decimalPos = value.indexOf('.');
+                    const isDot = value.match(/\./g);
+
+                    if (decimalPos >= 0 && isDot && isDot.length == 1) {
+                        value = value.substring(0, decimalPos + 3);
+                        return;
+                    }
+                }
+
+                const num = parseNumber(value);
+                if (!isNaN(num)) {
+                    $(this).val(formatNumber(num));
+                }
+            });
+
+            // Toggle between views
+            $('#schedule-c-toggle').click(function () {
+                $(this).addClass('active');
+                $('#s-corp-toggle').removeClass('active');
+                $('#schedule-c-view, #sub_one').show();
+                $('#s-corp-view, #sub_two').hide();
+            });
+
+            $('#s-corp-toggle').click(function () {
+                $(this).addClass('active');
+                $('#schedule-c-toggle').removeClass('active');
+                $('#s-corp-view, #sub_two').show();
+                $('#schedule-c-view, #sub_one').hide();
+            });
+
+            // Schedule C Calculations (corrected)
+            function calculateScheduleCSavings() {
+                const profit = parseNumber($('#sc-profit').val());
+                const hours = parseNumber($('#sc-hours').val());
+                const taxRate = parseNumber($('#sc-tax-rate').val()) / 100;
+                const years = parseNumber($('#sc-years').val());
+
+
+                // Calculate self-employment tax (EXACT Excel formula)
+                // =IF(B25<=0, 0, ROUND(MIN(B25*0.9235, 168600)*0.124 + B25*0.9235*0.029, 2))
+                const seTaxableIncome = profit * 0.9235;
+                const socialSecurityTax = Math.min(seTaxableIncome, 168600) * 0.124;
+                const medicareTax = seTaxableIncome * 0.029;
+                const selfEmploymentTax = profit <= 0 ? 0 : socialSecurityTax + medicareTax;
+
+                // Calculate QBI deduction savings (EXACT Excel formula)
+                // =ROUND((B25 - B26 / 2) * 0.2 * B19, 2)
+                const qbiSavings = (profit - (selfEmploymentTax / 2)) * 0.2 * taxRate;
+
+                // Calculate reasonable salary (hours * $34/hour)
+                const reasonableSalary = hours * 34;
+
+                // Calculate FICA & Medicare Tax
+                const ficaTax = Math.min((reasonableSalary), 168600) * 0.124 + (reasonableSalary) * 0.029;
+
+                // Calculate S Corporation Profit
+                const scorpTax = profit - reasonableSalary - (Math.min(reasonableSalary, 168600) * 0.062 + reasonableSalary * 0.0145);
+
+                // Calculate Updated QBID Tax Savings
+                const qbiSavingsNew = scorpTax * 0.2 * taxRate;
+
+                // Calculate S Corp Tax Savings
+                const scorpTaxSavings = selfEmploymentTax - ficaTax;
+
+                // Calculate QBID Tax Adjustment
+                const qbiTaxAdjust = qbiSavingsNew - qbiSavings;
+
+                // Calculate annual savings
+                const annualSavings = scorpTaxSavings + qbiTaxAdjust;
+
+                // Calculate lifetime savings
+                const lifetimeSavings = annualSavings * years;
+
+                $('#sc-annual-savings').text(formatCurrency(annualSavings));
+                $('#sc-lifetime-savings').text(formatCurrency(lifetimeSavings));
+            }
+
+            // S Corp Calculations
+            function calculateSCorpSavings() {
+                const salary = parseNumber($('#s-corp-salary').val());
+                const hours = parseNumber($('#s-corp-hours').val());
+                const hourlyRate = parseNumber($('#s-corp-hourly-rate').val());
+                const taxRate = parseNumber($('#s-corp-tax-rate').val()) / 100;
+                const years = parseNumber($('#s-corp-years').val());
+
+                // Calculate reasonable salary
+                const reasonableSalary = hours * hourlyRate;
+
+                // Calculate current FICA and Medicare taxes
+                const socialSecurityWageBase = 168600; // 2024 limit
+                const currentFica = Math.min(salary, socialSecurityWageBase) * 0.124;
+                const currentMedi = salary * 0.029;
+                const currentFicaMediTax = currentFica + currentMedi;
+
+                // Calculate S Corp FICA and Medicare taxes
+                const sCorpFica = Math.min(reasonableSalary, socialSecurityWageBase) * 0.124;
+                const sCorpMedi = reasonableSalary * 0.029;
+                const sCorpFicaMediTax = sCorpFica + sCorpMedi;
+
+                // Calculate savings from payroll taxes
+                const payrollTaxSavings = currentFicaMediTax - sCorpFicaMediTax;
+
+                // Calculate QBI deduction savings
+                const qbiSavings = ((salary - reasonableSalary + (payrollTaxSavings * 0.5)) * 0.2) * taxRate;
+
+                const totalAnnualSavings = payrollTaxSavings + qbiSavings;
+                const lifetimeSavings = totalAnnualSavings * years;
+
+                $('#s-corp-annual-savings').text(formatCurrency(totalAnnualSavings));
+                $('#s-corp-lifetime-savings').text(formatCurrency(lifetimeSavings));
+            }
+
+            // Event listeners for calculations
+            $(document).on('focus', '.ms-cl input', function () {
+                $(this).select();
+            });
+
+            $('#sc-profit, #sc-hours, #sc-tax-rate, #sc-years').on('input', calculateScheduleCSavings);
+            $('#s-corp-salary, #s-corp-hours, #s-corp-hourly-rate, #s-corp-tax-rate, #s-corp-years').on('input', calculateSCorpSavings);
+
+            // Initial calculations
+            calculateScheduleCSavings();
+            calculateSCorpSavings();
+        });
+    </script>
+</body>
+
+</html>
